@@ -1,0 +1,118 @@
+name: Check Upstream Updates
+
+on:
+  schedule:
+    # Täglich um 6:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-upstream:
+    name: Check Upstream Releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Element Web
+        id: element-web
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/element-hq/element-web/releases/latest | jq -r '.tag_name')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Element Web: $LATEST"
+
+      - name: Check Element Desktop
+        id: element-desktop
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/element-hq/element-desktop/releases/latest | jq -r '.tag_name')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Element Desktop: $LATEST"
+
+      - name: Check Element X Android
+        id: element-x-android
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/element-hq/element-x-android/releases/latest | jq -r '.tag_name')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Element X Android: $LATEST"
+
+      - name: Check Element X iOS
+        id: element-x-ios
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/element-hq/element-x-ios/releases/latest | jq -r '.tag_name')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Element X iOS: $LATEST"
+
+      - name: Create Issue if Updates Available
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const versions = {
+              'element-web': '${{ steps.element-web.outputs.latest }}',
+              'element-desktop': '${{ steps.element-desktop.outputs.latest }}',
+              'element-x-android': '${{ steps.element-x-android.outputs.latest }}',
+              'element-x-ios': '${{ steps.element-x-ios.outputs.latest }}'
+            };
+
+            // Check for existing issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'upstream-update',
+              state: 'open'
+            });
+
+            const title = `🔄 Upstream Updates Available`;
+            const body = `## Latest Upstream Versions
+
+            | Repository | Latest Version |
+            |------------|----------------|
+            | element-web | ${versions['element-web']} |
+            | element-desktop | ${versions['element-desktop']} |
+            | element-x-android | ${versions['element-x-android']} |
+            | element-x-ios | ${versions['element-x-ios']} |
+
+            ### Update Commands
+
+            \`\`\`bash
+            # Element Web
+            cd bbsam-messenger-web
+            git fetch upstream
+            git merge upstream/${versions['element-web']}
+
+            # Element Desktop
+            cd bbsam-messenger-desktop
+            git fetch upstream
+            git merge upstream/${versions['element-desktop']}
+
+            # Element X Android
+            cd bbsam-messenger-android
+            git fetch upstream
+            git merge upstream/${versions['element-x-android']}
+
+            # Element X iOS
+            cd bbsam-messenger-ios
+            git fetch upstream
+            git merge upstream/${versions['element-x-ios']}
+            \`\`\`
+
+            *Automatisch generiert am ${new Date().toISOString()}*
+            `;
+
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['upstream-update', 'maintenance']
+              });
+              console.log('Created new upstream update issue');
+            } else {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: body
+              });
+              console.log('Updated existing upstream issue');
+            }
