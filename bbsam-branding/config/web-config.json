@@ -20,8 +20,8 @@
     },
 
     "branding": {
-        "welcome_background_url": "themes/bbsam/img/backgrounds/welcome.svg",
-        "auth_header_logo_url": "themes/bbsam/img/logos/bbsam-logo.svg",
+        "welcome_background_url": "https://www.bbsam.de/wp-content/uploads/2020/03/cropped-Header-BBSaM-2020-web.jpg",
+        "auth_header_logo_url": "https://www.bbsam.de/wp-content/uploads/2024/08/bbs_logo_mit_kacheln.png",
         "auth_footer_links": [
             {
                 "text": "Datenschutz",

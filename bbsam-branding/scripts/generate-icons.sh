@@ -2,11 +2,11 @@
 # =============================================================================
 # BBSaM-Messenger Icon Generator
 # =============================================================================
-# Generiert alle Icon-Größen für alle Plattformen aus einem SVG Master-Icon
+# Generiert alle Icon-Größen für alle Plattformen aus einem SVG oder PNG Master-Icon
 #
 # Voraussetzungen:
 #   - ImageMagick (convert, identify)
-#   - librsvg2-bin (rsvg-convert) für SVG
+#   - librsvg2-bin (rsvg-convert) für SVG (optional wenn PNG verwendet wird)
 #   - icnsutils (png2icns) für macOS Icons
 #   - icoutils (icotool) für Windows Icons
 #
@@ -17,7 +17,7 @@
 #   brew install imagemagick librsvg libicns
 #
 # Verwendung:
-#   ./generate-icons.sh [path/to/icon.svg]
+#   ./generate-icons.sh [path/to/icon.svg|png]
 #
 # =============================================================================
 
@@ -36,8 +36,29 @@ BRANDING_DIR="$(dirname "$SCRIPT_DIR")"
 ASSETS_DIR="$BRANDING_DIR/assets"
 ICONS_DIR="$ASSETS_DIR/icons"
 
-# Input SVG
-INPUT_SVG="${1:-$ICONS_DIR/app-icon.svg}"
+# Input (SVG oder PNG)
+INPUT_FILE="${1:-}"
+
+# Auto-detect input file
+if [ -z "$INPUT_FILE" ]; then
+    if [ -f "$ICONS_DIR/app-icon.svg" ]; then
+        INPUT_FILE="$ICONS_DIR/app-icon.svg"
+    elif [ -f "$ICONS_DIR/app-icon.png" ]; then
+        INPUT_FILE="$ICONS_DIR/app-icon.png"
+    elif [ -f "$ASSETS_DIR/logos/bbsam-logo.png" ]; then
+        INPUT_FILE="$ASSETS_DIR/logos/bbsam-logo.png"
+    fi
+fi
+
+# Determine file type
+INPUT_TYPE=""
+if [[ "$INPUT_FILE" == *.svg ]]; then
+    INPUT_TYPE="svg"
+elif [[ "$INPUT_FILE" == *.png ]] || [[ "$INPUT_FILE" == *.PNG ]]; then
+    INPUT_TYPE="png"
+elif [[ "$INPUT_FILE" == *.jpg ]] || [[ "$INPUT_FILE" == *.jpeg ]]; then
+    INPUT_TYPE="jpg"
+fi
 
 # =============================================================================
 # Hilfsfunktionen
@@ -68,7 +89,7 @@ check_dependencies() {
         missing+=("imagemagick")
     fi
 
-    if ! command -v rsvg-convert &> /dev/null; then
+    if [ "$INPUT_TYPE" = "svg" ] && ! command -v rsvg-convert &> /dev/null; then
         missing+=("librsvg2-bin")
     fi
 
@@ -83,6 +104,21 @@ check_dependencies() {
     fi
 
     log_success "Alle Abhängigkeiten vorhanden"
+}
+
+# Konvertiert das Input-Bild in die gewünschte Größe
+# Unterstützt sowohl SVG als auch PNG/JPG
+resize_image() {
+    local width=$1
+    local height=$2
+    local output=$3
+
+    if [ "$INPUT_TYPE" = "svg" ]; then
+        rsvg-convert -w "$width" -h "$height" "$INPUT_FILE" -o "$output"
+    else
+        # PNG/JPG: Verwende ImageMagick
+        convert "$INPUT_FILE" -resize "${width}x${height}" -gravity center -extent "${width}x${height}" "$output"
+    fi
 }
 
 # =============================================================================
@@ -109,8 +145,7 @@ generate_android_icons() {
 
         mkdir -p "$android_dir/$dir"
 
-        rsvg-convert -w "$size" -h "$size" "$INPUT_SVG" \
-            -o "$android_dir/$dir/ic_launcher.png"
+        resize_image "$size" "$size" "$android_dir/$dir/ic_launcher.png"
 
         # Round Icon (mit Kreis-Maske)
         convert "$android_dir/$dir/ic_launcher.png" \
@@ -159,7 +194,7 @@ EOF
         local offset=$(((size - inner) / 2))
 
         # Erstelle transparenten Hintergrund mit zentriertem Icon
-        rsvg-convert -w "$inner" -h "$inner" "$INPUT_SVG" -o "/tmp/fg_inner.png"
+        resize_image "$inner" "$inner" "/tmp/fg_inner.png"
         convert -size "${size}x${size}" xc:transparent \
             "/tmp/fg_inner.png" -gravity center -composite \
             "$android_dir/$dir/ic_launcher_foreground.png"
@@ -218,8 +253,7 @@ generate_ios_icons() {
         # Berechne Pixelgröße (unterstützt Dezimalzahlen)
         local pixels=$(echo "$base * $scale" | bc | cut -d. -f1)
 
-        rsvg-convert -w "$pixels" -h "$pixels" "$INPUT_SVG" \
-            -o "$ios_dir/$name.png"
+        resize_image "$pixels" "$pixels" "$ios_dir/$name.png"
 
         log_success "  $name.png: ${pixels}x${pixels}px"
     done
@@ -272,8 +306,7 @@ generate_web_icons() {
     local ico_sizes=()
 
     for size in "${sizes[@]}"; do
-        rsvg-convert -w "$size" -h "$size" "$INPUT_SVG" \
-            -o "$web_dir/favicon-${size}.png"
+        resize_image "$size" "$size" "$web_dir/favicon-${size}.png"
 
         if [ "$size" -le 256 ]; then
             ico_sizes+=("$web_dir/favicon-${size}.png")
@@ -292,8 +325,7 @@ generate_web_icons() {
     fi
 
     # Apple Touch Icon
-    rsvg-convert -w 180 -h 180 "$INPUT_SVG" \
-        -o "$web_dir/apple-touch-icon.png"
+    resize_image 180 180 "$web_dir/apple-touch-icon.png"
     log_success "  apple-touch-icon.png (180x180)"
 
     # PWA Icons
@@ -302,7 +334,7 @@ generate_web_icons() {
     done
 
     # Maskable Icon (mit Padding)
-    rsvg-convert -w 384 -h 384 "$INPUT_SVG" -o "/tmp/maskable_inner.png"
+    resize_image 384 384 "/tmp/maskable_inner.png"
     convert -size 512x512 xc:white \
         "/tmp/maskable_inner.png" -gravity center -composite \
         "$web_dir/pwa-maskable-512.png"
@@ -359,8 +391,7 @@ generate_desktop_icons() {
     local win_pngs=()
 
     for size in "${win_sizes[@]}"; do
-        rsvg-convert -w "$size" -h "$size" "$INPUT_SVG" \
-            -o "/tmp/win_icon_${size}.png"
+        resize_image "$size" "$size" "/tmp/win_icon_${size}.png"
         win_pngs+=("/tmp/win_icon_${size}.png")
     done
 
@@ -390,8 +421,7 @@ generate_desktop_icons() {
 
     for size_info in "${mac_sizes[@]}"; do
         IFS=':' read -r size name <<< "$size_info"
-        rsvg-convert -w "$size" -h "$size" "$INPUT_SVG" \
-            -o "$iconset_dir/$name.png"
+        resize_image "$size" "$size" "$iconset_dir/$name.png"
     done
 
     # ICNS erstellen (macOS)
@@ -405,10 +435,8 @@ generate_desktop_icons() {
     log_success "  icon.icns (macOS)"
 
     # Linux PNG (256x256 und 512x512)
-    rsvg-convert -w 256 -h 256 "$INPUT_SVG" \
-        -o "$desktop_dir/icon-256.png"
-    rsvg-convert -w 512 -h 512 "$INPUT_SVG" \
-        -o "$desktop_dir/icon-512.png"
+    resize_image 256 256 "$desktop_dir/icon-256.png"
+    resize_image 512 512 "$desktop_dir/icon-512.png"
     cp "$desktop_dir/icon-256.png" "$desktop_dir/icon.png"
     log_success "  icon.png (Linux)"
 
@@ -430,14 +458,23 @@ main() {
     echo ""
 
     # Prüfe Input-Datei
-    if [ ! -f "$INPUT_SVG" ]; then
-        log_error "Input-Datei nicht gefunden: $INPUT_SVG"
-        log_info "Bitte erstellen Sie zuerst das Master-Icon unter:"
+    if [ -z "$INPUT_FILE" ] || [ ! -f "$INPUT_FILE" ]; then
+        log_error "Input-Datei nicht gefunden: $INPUT_FILE"
+        log_info "Bitte laden Sie das Logo herunter:"
+        log_info "  curl -o $ICONS_DIR/app-icon.png 'https://www.bbsam.de/wp-content/uploads/2024/08/bbs_logo_mit_kacheln.png'"
+        log_info ""
+        log_info "Oder erstellen Sie ein SVG Master-Icon unter:"
         log_info "  $ICONS_DIR/app-icon.svg"
         exit 1
     fi
 
-    log_info "Input: $INPUT_SVG"
+    if [ -z "$INPUT_TYPE" ]; then
+        log_error "Unbekanntes Dateiformat: $INPUT_FILE"
+        log_info "Unterstützte Formate: SVG, PNG, JPG"
+        exit 1
+    fi
+
+    log_info "Input: $INPUT_FILE ($INPUT_TYPE)"
     log_info "Output: $ICONS_DIR"
     echo ""
 

@@ -16,6 +16,27 @@ metadata:
   copyright: "BBSaM"
 
 # =============================================================================
+# OFFIZIELLE ASSETS
+# =============================================================================
+assets:
+  logo:
+    url: "https://www.bbsam.de/wp-content/uploads/2024/08/bbs_logo_mit_kacheln.png"
+    description: "BBSaM Logo mit farbigen Kacheln"
+    local_path: "bbsam-branding/assets/logos/bbsam-logo.png"
+    use_for:
+      - "App Icon (alle Plattformen)"
+      - "Login-Seite Header"
+      - "About-Screen"
+
+  welcome_background:
+    url: "https://www.bbsam.de/wp-content/uploads/2020/03/cropped-Header-BBSaM-2020-web.jpg"
+    description: "BBSaM Schulgebäude als Hintergrundbild"
+    local_path: "bbsam-branding/assets/splash/welcome-background.jpg"
+    use_for:
+      - "Willkommens-/Login-Seite Hintergrund"
+      - "Splash Screen (optional)"
+
+# =============================================================================
 # UPSTREAM REPOSITORIES
 # =============================================================================
 upstream_repos:
