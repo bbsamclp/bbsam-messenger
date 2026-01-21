@@ -1,0 +1,737 @@
+# BBSaM-Messenger Branding Checklist
+# Version: 1.0
+# Maschinenlesbare Konfiguration für alle anzupassenden Dateien
+#
+# Status-Werte: pending, in_progress, completed, not_applicable
+# Priority-Werte: critical, high, medium, low
+
+metadata:
+  project_name: BBSaM-Messenger
+  bundle_id_ios: eu.bbsam.messenger
+  package_name_android: eu.bbsam.messenger
+  desktop_app_id: eu.bbsam.messenger
+  homeserver_url: https://matrix.bbsam.eu
+  keycloak_url: https://bbb.bbsam.eu/keycloak
+  keycloak_realm: BBSaM
+  copyright: "BBSaM"
+
+# =============================================================================
+# UPSTREAM REPOSITORIES
+# =============================================================================
+upstream_repos:
+  web:
+    url: https://github.com/element-hq/element-web
+    fork_name: bbsam-messenger-web
+    recommendation: classic
+    reason: "Stabiler, mehr Anpassungsmöglichkeiten für Branding"
+
+  desktop:
+    url: https://github.com/element-hq/element-desktop
+    fork_name: bbsam-messenger-desktop
+    recommendation: classic
+    reason: "Basiert auf Web, Electron-Wrapper für Desktop-Apps"
+
+  android:
+    url: https://github.com/element-hq/element-x-android
+    fork_name: bbsam-messenger-android
+    recommendation: element-x
+    reason: "Moderner Rust SDK, aktive Entwicklung, bessere Performance"
+
+  ios:
+    url: https://github.com/element-hq/element-x-ios
+    fork_name: bbsam-messenger-ios
+    recommendation: element-x
+    reason: "Moderner Rust SDK, aktive Entwicklung, bessere Performance"
+
+# =============================================================================
+# WEB PLATFORM (element-web)
+# =============================================================================
+platforms:
+  web:
+    priority: critical
+
+    config_files:
+      - path: "config.json"
+        status: pending
+        priority: critical
+        changes:
+          - type: json_update
+            key: "brand"
+            value: "BBSaM-Messenger"
+          - type: json_update
+            key: "default_server_config.m.homeserver.base_url"
+            value: "https://matrix.bbsam.eu"
+          - type: json_update
+            key: "default_server_config.m.homeserver.server_name"
+            value: "bbsam.eu"
+          - type: json_update
+            key: "disable_custom_urls"
+            value: true
+          - type: json_update
+            key: "disable_guests"
+            value: true
+          - type: json_update
+            key: "sso_redirect_options.immediate"
+            value: true
+          - type: json_update
+            key: "setting_defaults.UIFeature.registration"
+            value: false
+
+    logo_files:
+      - path: "res/img/element-desktop-logo.svg"
+        status: pending
+        priority: critical
+        changes:
+          - type: file_replace
+            source: "branding/assets/logos/bbsam-logo.svg"
+
+      - path: "res/img/element-shiny.svg"
+        status: pending
+        priority: high
+        changes:
+          - type: file_replace
+            source: "branding/assets/logos/bbsam-shiny.svg"
+
+      - path: "res/vector-icons/favicon.ico"
+        status: pending
+        priority: critical
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/web/favicon.ico"
+
+      - path: "res/vector-icons/apple-touch-icon.png"
+        status: pending
+        priority: high
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/web/apple-touch-icon.png"
+
+      - path: "res/vector-icons/favicon-192.png"
+        status: pending
+        priority: high
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/web/favicon-192.png"
+
+      - path: "res/vector-icons/favicon-512.png"
+        status: pending
+        priority: high
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/web/favicon-512.png"
+
+    theme_files:
+      - path: "res/themes/light/css/theme.css"
+        status: pending
+        priority: high
+        changes:
+          - type: css_variable_update
+            description: "Primärfarben für BBSaM-Branding anpassen"
+
+      - path: "res/themes/dark/css/theme.css"
+        status: pending
+        priority: high
+        changes:
+          - type: css_variable_update
+            description: "Dark Theme Farben anpassen"
+
+    manifest_files:
+      - path: "res/manifest.json"
+        status: pending
+        priority: critical
+        changes:
+          - type: json_update
+            key: "name"
+            value: "BBSaM-Messenger"
+          - type: json_update
+            key: "short_name"
+            value: "BBSaM"
+          - type: json_update
+            key: "description"
+            value: "Sicherer Messenger für BBSaM"
+
+      - path: "res/welcome.html"
+        status: pending
+        priority: medium
+        changes:
+          - type: string_replace
+            find: "Element"
+            replace: "BBSaM-Messenger"
+
+    string_replacements:
+      - pattern: "Element"
+        replacement: "BBSaM-Messenger"
+        exclude_paths:
+          - "node_modules/"
+          - ".git/"
+          - "*.lock"
+        file_types:
+          - "*.html"
+          - "*.json"
+
+      - pattern: "element.io"
+        replacement: "bbsam.eu"
+        exclude_paths:
+          - "node_modules/"
+          - ".git/"
+
+    elements_to_remove:
+      - description: "Element Matrix Services (EMS) Werbung"
+        files:
+          - "src/components/views/elements/DesktopBuildsNotice.tsx"
+        action: "hide_or_remove_component"
+
+      - description: "Powered by Element Hinweise"
+        pattern: "Powered by Element"
+        action: "string_remove"
+
+      - description: "Element Analytics"
+        files:
+          - "src/PosthogTrackers.ts"
+        action: "disable_tracking"
+
+# =============================================================================
+# DESKTOP PLATFORM (element-desktop)
+# =============================================================================
+  desktop:
+    priority: critical
+
+    config_files:
+      - path: "package.json"
+        status: pending
+        priority: critical
+        changes:
+          - type: json_update
+            key: "name"
+            value: "bbsam-messenger-desktop"
+          - type: json_update
+            key: "productName"
+            value: "BBSaM-Messenger"
+          - type: json_update
+            key: "description"
+            value: "BBSaM-Messenger Desktop Client"
+          - type: json_update
+            key: "author"
+            value: "BBSaM"
+
+      - path: "electron-builder.json"
+        status: pending
+        priority: critical
+        changes:
+          - type: json_update
+            key: "appId"
+            value: "eu.bbsam.messenger"
+          - type: json_update
+            key: "productName"
+            value: "BBSaM-Messenger"
+          - type: json_update
+            key: "win.target"
+            value: ["nsis", "portable"]
+          - type: json_update
+            key: "publish.owner"
+            value: "bbsam"
+          - type: json_update
+            key: "publish.repo"
+            value: "bbsam-messenger-desktop"
+
+    icon_files:
+      - path: "build/icons/icon.ico"
+        status: pending
+        priority: critical
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/desktop/icon.ico"
+
+      - path: "build/icons/icon.icns"
+        status: pending
+        priority: critical
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/desktop/icon.icns"
+
+      - path: "build/icons/icon.png"
+        status: pending
+        priority: critical
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/desktop/icon.png"
+
+      - path: "build/icons/icon.svg"
+        status: pending
+        priority: high
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/app-icon.svg"
+
+    installer_config:
+      - path: "electron-builder.json"
+        status: pending
+        priority: high
+        changes:
+          - type: nsis_customization
+            description: "Windows Installer Branding"
+            settings:
+              installerIcon: "build/icons/icon.ico"
+              uninstallerIcon: "build/icons/icon.ico"
+              installerHeaderIcon: "build/icons/icon.ico"
+
+      - path: "electron-builder.json"
+        status: pending
+        priority: high
+        changes:
+          - type: dmg_customization
+            description: "macOS DMG Branding"
+            settings:
+              icon: "build/icons/icon.icns"
+
+    auto_update_config:
+      - path: "electron-builder.json"
+        status: pending
+        priority: medium
+        changes:
+          - type: json_update
+            key: "publish"
+            value:
+              provider: "github"
+              owner: "bbsam"
+              repo: "bbsam-messenger-desktop"
+
+# =============================================================================
+# ANDROID PLATFORM (element-x-android)
+# =============================================================================
+  android:
+    priority: critical
+
+    build_config:
+      - path: "app/build.gradle.kts"
+        status: pending
+        priority: critical
+        changes:
+          - type: gradle_update
+            key: "namespace"
+            value: "eu.bbsam.messenger"
+          - type: gradle_update
+            key: "applicationId"
+            value: "eu.bbsam.messenger"
+          - type: build_config_field
+            key: "APPLICATION_NAME"
+            value: "BBSaM-Messenger"
+
+      - path: "gradle.properties"
+        status: pending
+        priority: high
+        changes:
+          - type: property_update
+            description: "Signing-Konfiguration anpassen"
+
+    resource_files:
+      - path: "app/src/main/res/values/strings.xml"
+        status: pending
+        priority: critical
+        changes:
+          - type: xml_update
+            key: "app_name"
+            value: "BBSaM-Messenger"
+          - type: xml_update
+            key: "login_redirect_scheme"
+            value: "eu.bbsam.messenger"
+
+      - path: "app/src/main/AndroidManifest.xml"
+        status: pending
+        priority: critical
+        changes:
+          - type: manifest_update
+            description: "Package und Deep Links aktualisieren"
+
+    icon_files:
+      - path: "app/src/main/res/mipmap-mdpi/ic_launcher.png"
+        status: pending
+        priority: critical
+        size: "48x48"
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/android/mipmap-mdpi/ic_launcher.png"
+
+      - path: "app/src/main/res/mipmap-hdpi/ic_launcher.png"
+        status: pending
+        priority: critical
+        size: "72x72"
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/android/mipmap-hdpi/ic_launcher.png"
+
+      - path: "app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+        status: pending
+        priority: critical
+        size: "96x96"
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/android/mipmap-xhdpi/ic_launcher.png"
+
+      - path: "app/src/main/res/mipmap-xxhdpi/ic_launcher.png"
+        status: pending
+        priority: critical
+        size: "144x144"
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/android/mipmap-xxhdpi/ic_launcher.png"
+
+      - path: "app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+        status: pending
+        priority: critical
+        size: "192x192"
+        changes:
+          - type: file_replace
+            source: "branding/assets/icons/android/mipmap-xxxhdpi/ic_launcher.png"
+
+      - path: "app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+        status: pending
+        priority: critical
+        changes:
+          - type: adaptive_icon_update
+            description: "Adaptive Icon Konfiguration"
+
+    theme_files:
+      - path: "app/src/main/res/values/colors.xml"
+        status: pending
+        priority: high
+        changes:
+          - type: color_update
+            description: "BBSaM Farbschema Light Mode"
+
+      - path: "app/src/main/res/values-night/colors.xml"
+        status: pending
+        priority: high
+        changes:
+          - type: color_update
+            description: "BBSaM Farbschema Dark Mode"
+
+      - path: "libraries/designsystem/src/main/kotlin/**/theme/ElementTheme.kt"
+        status: pending
+        priority: high
+        changes:
+          - type: kotlin_theme_update
+            description: "Compose Theme Farben anpassen"
+
+    build_flavor:
+      name: "bbsam"
+      description: "Eigener Build-Flavor für BBSaM-Branding (SchildiChat-Strategie)"
+      directories:
+        - "app/src/bbsam/res/"
+        - "libraries/designsystem/src/bbsam/"
+      benefits:
+        - "Isoliert Anpassungen vom Upstream-Code"
+        - "Vereinfacht Upstream-Merges erheblich"
+        - "Erlaubt Override ohne Konfliktgefahr"
+
+# =============================================================================
+# iOS PLATFORM (element-x-ios)
+# =============================================================================
+  ios:
+    priority: critical
+    note: "Projekt verwendet XcodeGen - NICHT das Xcode-Projekt direkt bearbeiten!"
+
+    xcodegen_files:
+      - path: "app.yml"
+        status: pending
+        priority: critical
+        changes:
+          - type: yaml_update
+            key: "APP_DISPLAY_NAME"
+            value: "BBSaM-Messenger"
+          - type: yaml_update
+            key: "BASE_BUNDLE_IDENTIFIER"
+            value: "eu.bbsam.messenger"
+          - type: yaml_update
+            key: "APP_GROUP_IDENTIFIER"
+            value: "group.eu.bbsam"
+          - type: yaml_update
+            key: "PRODUCTION_APP_NAME"
+            value: "BBSaM"
+          - type: yaml_update
+            key: "DEVELOPMENT_TEAM"
+            value: "[TEAM_ID_HIER_EINFÜGEN]"
+
+      - path: "project.yml"
+        status: pending
+        priority: critical
+        changes:
+          - type: yaml_update
+            description: "Build-Konfiguration und Deployment-Targets"
+
+      - path: "ElementX/SupportingFiles/target.yml"
+        status: pending
+        priority: high
+        changes:
+          - type: yaml_update
+            description: "Associated Domains für OIDC"
+            key: "associated_domains"
+            value:
+              - "webcredentials:bbsam.eu"
+              - "applinks:matrix.bbsam.eu"
+
+    asset_files:
+      - path: "ElementX/Resources/Assets.xcassets/AppIcon.appiconset/"
+        status: pending
+        priority: critical
+        changes:
+          - type: directory_replace
+            source: "branding/assets/icons/ios/"
+            description: "Alle iOS Icon-Größen"
+            sizes:
+              - "20pt@1x,2x,3x"
+              - "29pt@1x,2x,3x"
+              - "40pt@1x,2x,3x"
+              - "60pt@2x,3x"
+              - "76pt@1x,2x"
+              - "83.5pt@2x"
+              - "1024pt@1x"
+
+      - path: "ElementX/Resources/Assets.xcassets/Colors/"
+        status: pending
+        priority: high
+        changes:
+          - type: color_asset_update
+            description: "Accent und Theme Farben"
+
+    settings_files:
+      - path: "ElementX/Sources/AppSettings.swift"
+        status: pending
+        priority: critical
+        changes:
+          - type: swift_update
+            description: "Default Homeserver und Map-Konfiguration"
+
+      - path: "Secrets/Secrets.swift"
+        status: pending
+        priority: medium
+        note: "Nicht im Git - muss lokal konfiguriert werden"
+        changes:
+          - type: local_config
+            description: "MapTiler API Key (falls benötigt)"
+
+    post_xcodegen:
+      command: "xcodegen generate"
+      description: "Nach Änderungen an YAML-Dateien ausführen"
+
+# =============================================================================
+# SSO/OIDC KONFIGURATION
+# =============================================================================
+sso_config:
+  keycloak:
+    realm_url: "https://bbb.bbsam.eu/keycloak/realms/BBSaM"
+    client_id: "bbsam-messenger"
+    scopes:
+      - "openid"
+      - "profile"
+      - "email"
+
+    redirect_uris:
+      synapse: "https://matrix.bbsam.eu/_synapse/client/oidc/callback"
+      development: "http://localhost:8080/callback"
+
+    web_origins:
+      - "https://matrix.bbsam.eu"
+      - "https://app.bbsam.eu"
+
+  synapse:
+    config_path: "/etc/synapse/homeserver.yaml"
+    changes:
+      - section: "oidc_providers"
+        description: "Keycloak als OIDC Provider konfigurieren"
+
+      - section: "password_config"
+        changes:
+          - key: "enabled"
+            value: false
+          - key: "localdb_enabled"
+            value: false
+
+      - section: "enable_registration"
+        value: false
+
+  element_web:
+    config_changes:
+      - key: "sso_redirect_options.immediate"
+        value: true
+      - key: "sso_redirect_options.on_welcome_page"
+        value: true
+      - key: "setting_defaults.UIFeature.registration"
+        value: false
+
+  element_mobile:
+    android:
+      - file: "app/src/main/res/values/strings.xml"
+        key: "login_redirect_scheme"
+        value: "eu.bbsam.messenger"
+      - file: "app/src/main/AndroidManifest.xml"
+        action: "Update OAuth callback intents"
+
+    ios:
+      - file: "ElementX/SupportingFiles/target.yml"
+        key: "associated_domains"
+        action: "Add webcredentials domain"
+
+# =============================================================================
+# ELEMENTE ZUM ENTFERNEN
+# =============================================================================
+elements_to_remove:
+  branding:
+    - description: "Element Logo und Wordmark"
+      locations:
+        - "res/img/element-*.svg"
+        - "res/img/logos/element-*.svg"
+      action: "replace_with_bbsam"
+
+    - description: "Links zu element.io"
+      pattern: "element.io"
+      exclude:
+        - "github.com/element-hq"  # Behalte Upstream-Referenzen
+      action: "replace_or_remove"
+
+    - description: "EMS (Element Matrix Services) Werbung"
+      files:
+        - "src/components/views/elements/DesktopBuildsNotice.tsx"
+        - "src/components/views/settings/tabs/user/HelpUserSettingsTab.tsx"
+      action: "remove_ems_references"
+
+    - description: "'Powered by Element' Hinweise"
+      pattern: "Powered by Element"
+      action: "remove"
+
+  analytics:
+    - description: "Element Analytics/Posthog"
+      files:
+        - "src/PosthogTrackers.ts"
+        - "src/PosthogAnalytics.ts"
+      action: "disable_or_remove"
+      config_key: "posthog"
+
+    - description: "Sentry Error Tracking"
+      config_key: "sentry"
+      action: "reconfigure_or_remove"
+
+  features:
+    - description: "Element Call Branding"
+      config_key: "element_call.brand"
+      action: "rebrand_to_bbsam"
+
+    - description: "Default Homeserver (matrix.org)"
+      action: "replace_with_matrix.bbsam.eu"
+
+# =============================================================================
+# FARBSCHEMA
+# =============================================================================
+color_scheme:
+  light:
+    primary: "#1A73E8"
+    primaryVariant: "#1557B0"
+    secondary: "#34A853"
+    background: "#FFFFFF"
+    surface: "#F8F9FA"
+    error: "#EA4335"
+    onPrimary: "#FFFFFF"
+    onSecondary: "#FFFFFF"
+    onBackground: "#202124"
+    onSurface: "#202124"
+    onError: "#FFFFFF"
+
+  dark:
+    primary: "#8AB4F8"
+    primaryVariant: "#669DF6"
+    secondary: "#81C995"
+    background: "#202124"
+    surface: "#303134"
+    error: "#F28B82"
+    onPrimary: "#202124"
+    onSecondary: "#202124"
+    onBackground: "#E8EAED"
+    onSurface: "#E8EAED"
+    onError: "#202124"
+
+  css_variables:
+    web:
+      - "--cpd-color-primary": "${primary}"
+      - "--cpd-color-bg-canvas-default": "${background}"
+      - "--cpd-color-bg-subtle-primary": "${surface}"
+      - "--cpd-color-text-primary": "${onBackground}"
+
+  android_colors:
+    - "colorPrimary": "${primary}"
+    - "colorPrimaryVariant": "${primaryVariant}"
+    - "colorSecondary": "${secondary}"
+    - "android:colorBackground": "${background}"
+
+  ios_assets:
+    - "AccentColor": "${primary}"
+    - "BackgroundColor": "${background}"
+
+# =============================================================================
+# VALIDIERUNG
+# =============================================================================
+validation:
+  required_assets:
+    - path: "branding/assets/icons/app-icon.svg"
+      description: "Master-Icon als SVG"
+
+    - path: "branding/assets/logos/bbsam-logo.svg"
+      description: "Vollständiges Logo"
+
+    - path: "branding/assets/logos/bbsam-wordmark.svg"
+      description: "Nur Schriftzug"
+
+  generated_assets:
+    ios:
+      - "20x20@1x.png"
+      - "20x20@2x.png"
+      - "20x20@3x.png"
+      - "29x29@1x.png"
+      - "29x29@2x.png"
+      - "29x29@3x.png"
+      - "40x40@1x.png"
+      - "40x40@2x.png"
+      - "40x40@3x.png"
+      - "60x60@2x.png"
+      - "60x60@3x.png"
+      - "76x76@1x.png"
+      - "76x76@2x.png"
+      - "83.5x83.5@2x.png"
+      - "1024x1024@1x.png"
+
+    android:
+      - "mipmap-mdpi/ic_launcher.png"       # 48x48
+      - "mipmap-hdpi/ic_launcher.png"       # 72x72
+      - "mipmap-xhdpi/ic_launcher.png"      # 96x96
+      - "mipmap-xxhdpi/ic_launcher.png"     # 144x144
+      - "mipmap-xxxhdpi/ic_launcher.png"    # 192x192
+      - "mipmap-anydpi-v26/ic_launcher.xml" # Adaptive
+
+    web:
+      - "favicon.ico"
+      - "favicon-16x16.png"
+      - "favicon-32x32.png"
+      - "favicon-192.png"
+      - "favicon-512.png"
+      - "apple-touch-icon.png"              # 180x180
+
+    desktop:
+      - "icon.ico"                          # Windows
+      - "icon.icns"                         # macOS
+      - "icon.png"                          # Linux (256x256 or 512x512)
+
+  checks:
+    - name: "all_icons_generated"
+      description: "Alle Icon-Größen wurden generiert"
+
+    - name: "no_element_references"
+      description: "Keine 'Element' Referenzen in UI-sichtbaren Strings"
+      exclude:
+        - "NOTICE"
+        - "LICENSE"
+        - "CHANGELOG"
+
+    - name: "sso_config_complete"
+      description: "SSO-Konfiguration ist vollständig"
+
+    - name: "build_successful"
+      description: "Alle Plattformen bauen erfolgreich"

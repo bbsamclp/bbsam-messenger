@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "BBSaM-Messenger Server-Konfiguration",
+
+  "matrix": {
+    "homeserver": {
+      "base_url": "https://matrix.bbsam.eu",
+      "server_name": "bbsam.eu"
+    },
+    "well_known": {
+      "m.homeserver": {
+        "base_url": "https://matrix.bbsam.eu"
+      },
+      "m.identity_server": {
+        "base_url": null
+      }
+    }
+  },
+
+  "sso": {
+    "provider": "keycloak",
+    "keycloak": {
+      "base_url": "https://bbb.bbsam.eu/keycloak",
+      "realm": "BBSaM",
+      "client_id": "bbsam-messenger",
+      "issuer": "https://bbb.bbsam.eu/keycloak/realms/BBSaM",
+      "endpoints": {
+        "authorization": "https://bbb.bbsam.eu/keycloak/realms/BBSaM/protocol/openid-connect/auth",
+        "token": "https://bbb.bbsam.eu/keycloak/realms/BBSaM/protocol/openid-connect/token",
+        "userinfo": "https://bbb.bbsam.eu/keycloak/realms/BBSaM/protocol/openid-connect/userinfo",
+        "logout": "https://bbb.bbsam.eu/keycloak/realms/BBSaM/protocol/openid-connect/logout"
+      },
+      "scopes": ["openid", "profile", "email"]
+    },
+    "redirect_uris": {
+      "synapse": "https://matrix.bbsam.eu/_synapse/client/oidc/callback",
+      "web": "https://app.bbsam.eu/",
+      "mobile_ios": "eu.bbsam.messenger://callback",
+      "mobile_android": "eu.bbsam.messenger://callback",
+      "desktop": "eu.bbsam.messenger://callback",
+      "development": "http://localhost:8080/callback"
+    }
+  },
+
+  "synapse": {
+    "config_template": {
+      "oidc_providers": [
+        {
+          "idp_id": "keycloak",
+          "idp_name": "BBSaM Login",
+          "idp_brand": "org.keycloak",
+          "discover": true,
+          "issuer": "https://bbb.bbsam.eu/keycloak/realms/BBSaM",
+          "client_id": "bbsam-messenger",
+          "client_secret_path": "/etc/synapse/secrets/keycloak_client_secret",
+          "scopes": ["openid", "profile", "email"],
+          "user_mapping_provider": {
+            "config": {
+              "localpart_template": "{{ user.preferred_username }}",
+              "display_name_template": "{{ user.name | default(user.preferred_username) }}",
+              "email_template": "{{ user.email }}"
+            }
+          },
+          "allow_existing_users": true,
+          "backchannel_logout_enabled": true
+        }
+      ],
+      "password_config": {
+        "enabled": false,
+        "localdb_enabled": false
+      },
+      "enable_registration": false,
+      "allow_guest_access": false
+    }
+  },
+
+  "environments": {
+    "production": {
+      "matrix_url": "https://matrix.bbsam.eu",
+      "keycloak_url": "https://bbb.bbsam.eu/keycloak",
+      "web_url": "https://app.bbsam.eu"
+    },
+    "staging": {
+      "matrix_url": "https://matrix-staging.bbsam.eu",
+      "keycloak_url": "https://bbb-staging.bbsam.eu/keycloak",
+      "web_url": "https://app-staging.bbsam.eu"
+    },
+    "development": {
+      "matrix_url": "http://localhost:8008",
+      "keycloak_url": "http://localhost:8080",
+      "web_url": "http://localhost:8080"
+    }
+  }
+}

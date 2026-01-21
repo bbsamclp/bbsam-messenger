@@ -1,0 +1,58 @@
+name: Generate Icons
+
+on:
+  push:
+    paths:
+      - 'bbsam-branding/assets/icons/app-icon.svg'
+  workflow_dispatch:
+
+jobs:
+  generate:
+    name: Generate Icons
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick librsvg2-bin icoutils bc
+
+      - name: Check Master Icon
+        run: |
+          if [ ! -f "bbsam-branding/assets/icons/app-icon.svg" ]; then
+            echo "::error::Master icon not found: bbsam-branding/assets/icons/app-icon.svg"
+            exit 1
+          fi
+
+      - name: Generate Icons
+        run: |
+          ./bbsam-branding/scripts/generate-icons.sh
+
+      - name: Validate Generated Icons
+        run: |
+          ./bbsam-branding/scripts/validate-branding.sh || true
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-icons
+          path: |
+            bbsam-branding/assets/icons/android/
+            bbsam-branding/assets/icons/ios/
+            bbsam-branding/assets/icons/web/
+            bbsam-branding/assets/icons/desktop/
+
+      - name: Commit Generated Icons
+        if: github.event_name == 'push'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add bbsam-branding/assets/icons/
+          git diff --staged --quiet || git commit -m "chore: regenerate icons from master SVG"
+
+      - name: Push Changes
+        if: github.event_name == 'push'
+        run: |
+          git push || echo "No changes to push"

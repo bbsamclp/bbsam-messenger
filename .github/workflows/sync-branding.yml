@@ -1,0 +1,55 @@
+name: Sync Branding
+
+on:
+  push:
+    paths:
+      - 'bbsam-branding/**'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to sync (web, desktop, android, ios, all)'
+        required: false
+        default: 'all'
+
+jobs:
+  validate:
+    name: Validate Branding
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Validate Branding
+        run: |
+          ./bbsam-branding/scripts/validate-branding.sh || true
+
+  check-upstream:
+    name: Check Upstream Updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      - name: Check Upstream
+        run: |
+          ./bbsam-branding/scripts/check-upstream.sh all
+
+      - name: Generate Report
+        run: |
+          ./bbsam-branding/scripts/check-upstream.sh report
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: upstream-report
+          path: upstream-report-*.md
