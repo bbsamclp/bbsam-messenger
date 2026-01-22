@@ -1,0 +1,356 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ===========================================================================
+  # Create Release
+  # ===========================================================================
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: BBSaM-Messenger ${{ steps.get_version.outputs.version }}
+          draft: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===========================================================================
+  # Build & Upload Web
+  # ===========================================================================
+  release-web:
+    name: Release Web
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install & Build
+        run: |
+          yarn install --immutable
+          chmod +x ./bbsam-branding/scripts/apply-branding.sh
+          ./bbsam-branding/scripts/apply-branding.sh web
+          yarn build
+
+      - name: Create Archive
+        run: |
+          cd webapp
+          tar -czvf ../bbsam-messenger-web-${{ needs.create-release.outputs.version }}.tar.gz .
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: bbsam-messenger-web-${{ needs.create-release.outputs.version }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===========================================================================
+  # Build & Upload Desktop (All Platforms)
+  # ===========================================================================
+  release-desktop:
+    name: Release Desktop (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            build_cmd: yarn dist:linux
+            artifact_pattern: "dist/*.AppImage dist/*.deb"
+          - os: macos-latest
+            build_cmd: yarn dist:mac
+            artifact_pattern: "dist/*.dmg dist/*.zip"
+          - os: windows-latest
+            build_cmd: yarn dist:win
+            artifact_pattern: "dist/*.exe"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      - name: Apply Branding
+        shell: bash
+        run: |
+          chmod +x ./bbsam-branding/scripts/apply-branding.sh
+          ./bbsam-branding/scripts/apply-branding.sh desktop
+
+      # macOS Code Signing
+      - name: Import macOS Certificates
+        if: runner.os == 'macOS' && env.MACOS_CERTIFICATE != ''
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k actions build.keychain
+          rm certificate.p12
+
+      # Windows Code Signing
+      - name: Import Windows Certificate
+        if: runner.os == 'Windows' && env.WIN_CERTIFICATE != ''
+        env:
+          WIN_CERTIFICATE: ${{ secrets.WIN_CERTIFICATE }}
+          WIN_CERTIFICATE_PWD: ${{ secrets.WIN_CERTIFICATE_PWD }}
+        run: |
+          echo $env:WIN_CERTIFICATE | Out-File -FilePath certificate.b64
+          certutil -decode certificate.b64 certificate.pfx
+          Remove-Item certificate.b64
+
+      - name: Build Desktop App
+        run: ${{ matrix.build_cmd }}
+        env:
+          # macOS Notarization
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Windows Signing
+          WIN_CSC_LINK: certificate.pfx
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CERTIFICATE_PWD }}
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===========================================================================
+  # Build & Upload Android
+  # ===========================================================================
+  release-android:
+    name: Release Android
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Apply Branding
+        run: |
+          chmod +x ./bbsam-branding/scripts/apply-branding.sh
+          ./bbsam-branding/scripts/apply-branding.sh android
+
+      - name: Decode Keystore
+        if: env.ANDROID_KEYSTORE != ''
+        env:
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+        run: |
+          echo $ANDROID_KEYSTORE | base64 --decode > app/keystore.jks
+
+      - name: Build Release APK & AAB
+        run: |
+          ./gradlew assembleGplayRelease bundleGplayRelease
+        env:
+          KEYSTORE_FILE: keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.version }}
+          files: |
+            app/build/outputs/apk/gplay/release/*.apk
+            app/build/outputs/bundle/gplayRelease/*.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Optional: Upload to Play Store
+      - name: Upload to Play Store
+        if: secrets.GOOGLE_PLAY_SERVICE_ACCOUNT != ''
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: eu.bbsam.messenger
+          releaseFiles: app/build/outputs/bundle/gplayRelease/*.aab
+          track: internal
+          status: draft
+
+  # ===========================================================================
+  # Build iOS (Archive only - manual App Store upload)
+  # ===========================================================================
+  release-ios:
+    name: Release iOS
+    runs-on: macos-latest
+    needs: create-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Apply Branding
+        run: |
+          chmod +x ./bbsam-branding/scripts/apply-branding.sh
+          ./bbsam-branding/scripts/apply-branding.sh ios
+
+      - name: Generate Xcode Project
+        run: xcodegen generate
+
+      - name: Import Certificates
+        if: env.IOS_CERTIFICATE != ''
+        env:
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
+          IOS_CERTIFICATE_PWD: ${{ secrets.IOS_CERTIFICATE_PWD }}
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+        run: |
+          # Create keychain
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+
+          # Import certificate
+          echo $IOS_CERTIFICATE | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P $IOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k actions build.keychain
+
+          # Install provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo $IOS_PROVISIONING_PROFILE | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      - name: Build Archive
+        run: |
+          xcodebuild \
+            -project ElementX.xcodeproj \
+            -scheme ElementX \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/BBSaM-Messenger.xcarchive \
+            archive
+
+      - name: Export IPA
+        if: env.IOS_CERTIFICATE != ''
+        run: |
+          cat > ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>${{ secrets.APPLE_TEAM_ID }}</string>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/BBSaM-Messenger.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist ExportOptions.plist
+        env:
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
+
+      - name: Upload Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-archive
+          path: build/BBSaM-Messenger.xcarchive
+
+      # Optional: Upload to TestFlight
+      - name: Upload to TestFlight
+        if: env.IOS_CERTIFICATE != ''
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ipa/*.ipa \
+            --username "${{ secrets.APPLE_ID }}" \
+            --password "${{ secrets.APPLE_ID_PASSWORD }}"
+        env:
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}

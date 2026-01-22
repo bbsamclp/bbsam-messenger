@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "BBSaM-Messenger String-Ersetzungen und Übersetzungen",
+
+  "brand": {
+    "name": "BBSaM-Messenger",
+    "shortName": "BBSaM",
+    "description": "Sicherer Messenger für BBSaM",
+    "copyright": "BBSaM",
+    "year": "2024"
+  },
+
+  "replacements": {
+    "Element": "BBSaM-Messenger",
+    "Element X": "BBSaM-Messenger",
+    "element.io": "bbsam.eu",
+    "Element Matrix Services": "",
+    "EMS": "",
+    "Powered by Element": "",
+    "vector.im": "bbsam.eu"
+  },
+
+  "urls": {
+    "website": "https://bbsam.eu",
+    "privacy": "https://bbsam.eu/datenschutz",
+    "terms": "https://bbsam.eu/nutzungsbedingungen",
+    "imprint": "https://bbsam.eu/impressum",
+    "help": "https://bbsam.eu/hilfe",
+    "support": "https://bbsam.eu/support"
+  },
+
+  "locales": {
+    "de": {
+      "app_name": "BBSaM-Messenger",
+      "login_title": "Bei BBSaM anmelden",
+      "login_subtitle": "Melden Sie sich mit Ihrem BBSaM-Konto an",
+      "login_button": "Mit BBSaM anmelden",
+      "welcome_title": "Willkommen bei BBSaM-Messenger",
+      "welcome_subtitle": "Sichere Kommunikation für BBSaM",
+      "about_description": "BBSaM-Messenger ist ein sicherer Messenger basierend auf dem Matrix-Protokoll.",
+      "footer_privacy": "Datenschutz",
+      "footer_terms": "Nutzungsbedingungen",
+      "footer_imprint": "Impressum"
+    },
+    "en": {
+      "app_name": "BBSaM-Messenger",
+      "login_title": "Sign in to BBSaM",
+      "login_subtitle": "Sign in with your BBSaM account",
+      "login_button": "Sign in with BBSaM",
+      "welcome_title": "Welcome to BBSaM-Messenger",
+      "welcome_subtitle": "Secure communication for BBSaM",
+      "about_description": "BBSaM-Messenger is a secure messenger based on the Matrix protocol.",
+      "footer_privacy": "Privacy",
+      "footer_terms": "Terms of Use",
+      "footer_imprint": "Imprint"
+    }
+  }
+}

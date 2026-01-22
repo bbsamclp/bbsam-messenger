@@ -1,0 +1,96 @@
+{
+    "$schema": "https://element.io/schemas/config.json",
+
+    "default_server_config": {
+        "m.homeserver": {
+            "base_url": "https://matrix.bbsam.eu",
+            "server_name": "bbsam.eu"
+        }
+    },
+
+    "brand": "BBSaM-Messenger",
+
+    "disable_custom_urls": true,
+    "disable_guests": true,
+    "disable_login_language_selector": false,
+
+    "sso_redirect_options": {
+        "immediate": true,
+        "on_welcome_page": true
+    },
+
+    "branding": {
+        "welcome_background_url": "https://www.bbsam.de/wp-content/uploads/2020/03/cropped-Header-BBSaM-2020-web.jpg",
+        "auth_header_logo_url": "https://www.bbsam.de/wp-content/uploads/2024/08/bbs_logo_mit_kacheln.png",
+        "auth_footer_links": [
+            {
+                "text": "Datenschutz",
+                "url": "https://bbsam.eu/datenschutz"
+            },
+            {
+                "text": "Impressum",
+                "url": "https://bbsam.eu/impressum"
+            },
+            {
+                "text": "Hilfe",
+                "url": "https://bbsam.eu/hilfe"
+            }
+        ]
+    },
+
+    "setting_defaults": {
+        "breadcrumbs": true,
+        "UIFeature.registration": false,
+        "UIFeature.passwordReset": false,
+        "UIFeature.deactivate": false,
+        "UIFeature.feedback": false,
+        "UIFeature.voip": true,
+        "UIFeature.widgets": true,
+        "UIFeature.advancedSettings": false,
+        "UIFeature.shareQrCode": true,
+        "UIFeature.shareSocial": false
+    },
+
+    "features": {
+        "feature_registration": false
+    },
+
+    "room_directory": {
+        "servers": ["bbsam.eu"]
+    },
+
+    "show_labs_settings": false,
+
+    "enable_presence_by_hs_url": {
+        "https://matrix.bbsam.eu": true
+    },
+
+    "terms_and_conditions_links": [
+        {
+            "text": "Datenschutzerklärung",
+            "url": "https://bbsam.eu/datenschutz"
+        },
+        {
+            "text": "Nutzungsbedingungen",
+            "url": "https://bbsam.eu/nutzungsbedingungen"
+        }
+    ],
+
+    "privacy_policy_url": "https://bbsam.eu/datenschutz",
+
+    "help_url": "https://bbsam.eu/hilfe",
+
+    "posthog": {
+        "enabled": false
+    },
+
+    "sentry": {
+        "enabled": false
+    },
+
+    "map_style_url": null,
+
+    "force_verification": false,
+
+    "default_theme": "light"
+}

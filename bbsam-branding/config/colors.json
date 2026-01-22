@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "BBSaM-Messenger Farbdefinitionen",
+
+  "themes": {
+    "light": {
+      "primary": "#1A73E8",
+      "primaryVariant": "#1557B0",
+      "primaryDark": "#0D47A1",
+      "primaryLight": "#4791DB",
+
+      "secondary": "#34A853",
+      "secondaryVariant": "#1E8E3E",
+
+      "background": "#FFFFFF",
+      "surface": "#F8F9FA",
+      "surfaceVariant": "#E8EAED",
+
+      "error": "#EA4335",
+      "errorVariant": "#C5221F",
+      "warning": "#FBBC04",
+      "success": "#34A853",
+      "info": "#4285F4",
+
+      "onPrimary": "#FFFFFF",
+      "onSecondary": "#FFFFFF",
+      "onBackground": "#202124",
+      "onSurface": "#202124",
+      "onSurfaceVariant": "#5F6368",
+      "onError": "#FFFFFF",
+
+      "outline": "#DADCE0",
+      "outlineVariant": "#C4C7C5",
+
+      "shadow": "rgba(0, 0, 0, 0.1)",
+      "scrim": "rgba(0, 0, 0, 0.32)"
+    },
+
+    "dark": {
+      "primary": "#8AB4F8",
+      "primaryVariant": "#669DF6",
+      "primaryDark": "#4285F4",
+      "primaryLight": "#AECBFA",
+
+      "secondary": "#81C995",
+      "secondaryVariant": "#5BB974",
+
+      "background": "#202124",
+      "surface": "#303134",
+      "surfaceVariant": "#3C4043",
+
+      "error": "#F28B82",
+      "errorVariant": "#EE675C",
+      "warning": "#FDD663",
+      "success": "#81C995",
+      "info": "#8AB4F8",
+
+      "onPrimary": "#202124",
+      "onSecondary": "#202124",
+      "onBackground": "#E8EAED",
+      "onSurface": "#E8EAED",
+      "onSurfaceVariant": "#9AA0A6",
+      "onError": "#202124",
+
+      "outline": "#5F6368",
+      "outlineVariant": "#444746",
+
+      "shadow": "rgba(0, 0, 0, 0.3)",
+      "scrim": "rgba(0, 0, 0, 0.6)"
+    }
+  },
+
+  "semantic": {
+    "message": {
+      "sent": "#E3F2FD",
+      "received": "#F5F5F5",
+      "sentDark": "#1E3A5F",
+      "receivedDark": "#2D2D2D"
+    },
+    "status": {
+      "online": "#34A853",
+      "away": "#FBBC04",
+      "busy": "#EA4335",
+      "offline": "#9AA0A6"
+    },
+    "encryption": {
+      "verified": "#34A853",
+      "unverified": "#FBBC04",
+      "unknown": "#9AA0A6"
+    }
+  },
+
+  "platforms": {
+    "web": {
+      "cssVariables": {
+        "--cpd-color-bg-canvas-default": "${background}",
+        "--cpd-color-bg-subtle-primary": "${surface}",
+        "--cpd-color-bg-action-primary-rest": "${primary}",
+        "--cpd-color-bg-action-primary-hovered": "${primaryVariant}",
+        "--cpd-color-bg-action-primary-pressed": "${primaryDark}",
+        "--cpd-color-text-primary": "${onBackground}",
+        "--cpd-color-text-secondary": "${onSurfaceVariant}",
+        "--cpd-color-text-on-solid-primary": "${onPrimary}",
+        "--cpd-color-border-interactive-primary": "${primary}",
+        "--cpd-color-border-disabled": "${outline}",
+        "--cpd-color-icon-primary": "${primary}",
+        "--cpd-color-icon-secondary": "${onSurfaceVariant}"
+      }
+    },
+
+    "android": {
+      "colors": {
+        "colorPrimary": "${primary}",
+        "colorPrimaryDark": "${primaryDark}",
+        "colorPrimaryVariant": "${primaryVariant}",
+        "colorSecondary": "${secondary}",
+        "colorSecondaryVariant": "${secondaryVariant}",
+        "colorBackground": "${background}",
+        "colorSurface": "${surface}",
+        "colorError": "${error}",
+        "colorOnPrimary": "${onPrimary}",
+        "colorOnSecondary": "${onSecondary}",
+        "colorOnBackground": "${onBackground}",
+        "colorOnSurface": "${onSurface}",
+        "colorOnError": "${onError}",
+        "android:statusBarColor": "${primaryDark}",
+        "android:navigationBarColor": "${background}"
+      }
+    },
+
+    "ios": {
+      "colorAssets": {
+        "AccentColor": "${primary}",
+        "BackgroundColor": "${background}",
+        "LabelColor": "${onBackground}",
+        "SecondaryLabelColor": "${onSurfaceVariant}",
+        "TertiaryLabelColor": "${outline}",
+        "SystemBackgroundColor": "${background}",
+        "SecondarySystemBackgroundColor": "${surface}",
+        "TertiarySystemBackgroundColor": "${surfaceVariant}"
+      }
+    }
+  }
+}
