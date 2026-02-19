@@ -9,8 +9,6 @@
 #
 # =============================================================================
 
-set -e
-
 # Farben für Output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -42,12 +40,12 @@ log_success() {
 
 log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
-    ((WARNINGS++))
+    WARNINGS=$((WARNINGS + 1))
 }
 
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
-    ((ERRORS++))
+    ERRORS=$((ERRORS + 1))
 }
 
 check_file() {
@@ -57,14 +55,10 @@ check_file() {
 
     if [ -f "$file" ]; then
         log_success "$description: $file"
-        return 0
+    elif [ "$required" = true ]; then
+        log_error "$description fehlt: $file"
     else
-        if [ "$required" = true ]; then
-            log_error "$description fehlt: $file"
-        else
-            log_warn "$description fehlt (optional): $file"
-        fi
-        return 1
+        log_warn "$description fehlt (optional): $file"
     fi
 }
 
@@ -73,12 +67,11 @@ check_dir() {
     local description=$2
 
     if [ -d "$dir" ] && [ -n "$(ls -A "$dir" 2>/dev/null)" ]; then
-        local count=$(find "$dir" -type f | wc -l)
+        local count
+        count=$(find "$dir" -type f 2>/dev/null | wc -l)
         log_success "$description: $dir ($count Dateien)"
-        return 0
     else
         log_error "$description fehlt oder leer: $dir"
-        return 1
     fi
 }
 
@@ -204,10 +197,11 @@ validate_element_references() {
     echo "=== Element-Referenzen prüfen ==="
 
     # Suche nach "Element" in Konfigurationsdateien (sollte ersetzt sein)
-    local element_refs=$(grep -r "Element" "$CONFIG_DIR" --include="*.json" 2>/dev/null | \
-                         grep -v "element.io" | \
-                         grep -v "element-hq" | \
-                         grep -v '"Element"' || true)
+    local element_refs
+    element_refs=$(grep -r "Element" "$CONFIG_DIR" --include="*.json" 2>/dev/null | \
+                     grep -v "element.io" | \
+                     grep -v "element-hq" | \
+                     grep -v '"Element"' || true)
 
     if [ -n "$element_refs" ]; then
         log_warn "Mögliche Element-Referenzen gefunden (prüfen!):"

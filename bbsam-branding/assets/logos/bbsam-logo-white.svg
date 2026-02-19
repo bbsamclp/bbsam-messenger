@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BBSaM-Messenger Logo (Weiß / für dunklen Hintergrund)
+  Verwendung: Dark Mode, dunkle Hintergründe, Splash Screens
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <!-- Fächer-Motiv (links, weiß) -->
+  <g transform="translate(70, 110)">
+    <path d="M0,0 L-12,-70 C-8,-76 -2,-78 4,-70 L8,-30 Z" fill="#FFFFFF" opacity="0.95"/>
+    <path d="M0,0 L14,-72 C19,-74 24,-70 26,-62 L18,-24 Z" fill="#FFFFFF" opacity="0.85"/>
+    <path d="M0,0 L36,-58 C42,-54 44,-48 42,-40 L26,-14 Z" fill="#FFFFFF" opacity="0.75"/>
+    <path d="M0,0 L52,-34 C56,-28 57,-20 54,-14 L32,-2 Z" fill="#FFFFFF" opacity="0.65"/>
+    <path d="M0,0 L60,-6 C62,2 60,10 55,14 L34,10 Z" fill="#FFFFFF" opacity="0.55"/>
+    <circle cx="0" cy="0" r="7" fill="#8AB4F8"/>
+    <circle cx="0" cy="0" r="4" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Schriftzug (weiß) -->
+  <text x="145" y="105" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF">
+    BBSaM
+  </text>
+  <text x="145" y="140" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="400" fill="#E8EAED" letter-spacing="1">
+    Messenger
+  </text>
+
+  <!-- Farbige Kacheln (heller für dunklen Hintergrund) -->
+  <g transform="translate(145, 158)">
+    <rect x="0" y="0" width="22" height="22" rx="3" fill="#4285F4"/>
+    <line x1="17" y1="5" x2="5" y2="17" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+    <rect x="28" y="0" width="22" height="22" rx="3" fill="#34A853"/>
+    <line x1="45" y1="5" x2="33" y2="17" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+    <rect x="56" y="0" width="22" height="22" rx="3" fill="#AB47BC"/>
+    <line x1="73" y1="5" x2="61" y2="17" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+    <rect x="84" y="0" width="22" height="22" rx="3" fill="#CDDC39"/>
+    <line x1="101" y1="5" x2="89" y2="17" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+    <rect x="112" y="0" width="22" height="22" rx="3" fill="#FF6D00"/>
+    <line x1="129" y1="5" x2="117" y2="17" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+  </g>
+</svg>

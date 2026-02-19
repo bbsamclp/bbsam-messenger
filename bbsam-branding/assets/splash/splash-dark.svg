@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BBSaM-Messenger Splash Screen (Dark Mode)
+  Verwendung: Android & iOS Splash/Launch Screen (Dark Mode)
+  Größe: 1080x1920 (9:16 Portrait)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="splashBgDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#202124;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#303134;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Hintergrund -->
+  <rect x="0" y="0" width="1080" height="1920" fill="url(#splashBgDark)"/>
+
+  <!-- Zentriertes Logo-Element -->
+  <g transform="translate(540, 860)">
+    <!-- Fächer-Motiv (groß, zentriert, helle Farben) -->
+    <g transform="translate(-30, -40)">
+      <path d="M0,0 L-30,-180 C-20,-195 -5,-200 10,-180 L20,-70 Z" fill="#8AB4F8" opacity="0.95"/>
+      <path d="M0,0 L35,-185 C48,-188 60,-180 65,-160 L45,-60 Z" fill="#8AB4F8" opacity="0.85"/>
+      <path d="M0,0 L90,-150 C105,-140 112,-125 108,-105 L65,-35 Z" fill="#8AB4F8" opacity="0.75"/>
+      <path d="M0,0 L135,-90 C145,-75 148,-55 140,-38 L82,-5 Z" fill="#8AB4F8" opacity="0.65"/>
+      <path d="M0,0 L155,-15 C160,5 155,25 142,35 L85,25 Z" fill="#8AB4F8" opacity="0.55"/>
+      <circle cx="0" cy="0" r="18" fill="#AECBFA"/>
+      <circle cx="0" cy="0" r="10" fill="#8AB4F8"/>
+    </g>
+
+    <!-- App-Name -->
+    <text x="0" y="120" text-anchor="middle" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="64" font-weight="700" fill="#E8EAED">
+      BBSaM-Messenger
+    </text>
+
+    <!-- Untertitel -->
+    <text x="0" y="170" text-anchor="middle" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="400" fill="#9AA0A6">
+      Sichere Kommunikation für BBSaM
+    </text>
+
+    <!-- Farbige Kacheln (heller für Dark Mode) -->
+    <g transform="translate(-88, 210)">
+      <rect x="0" y="0" width="28" height="28" rx="4" fill="#4285F4"/>
+      <rect x="36" y="0" width="28" height="28" rx="4" fill="#34A853"/>
+      <rect x="72" y="0" width="28" height="28" rx="4" fill="#AB47BC"/>
+      <rect x="108" y="0" width="28" height="28" rx="4" fill="#CDDC39"/>
+      <rect x="144" y="0" width="28" height="28" rx="4" fill="#FF6D00"/>
+    </g>
+  </g>
+</svg>

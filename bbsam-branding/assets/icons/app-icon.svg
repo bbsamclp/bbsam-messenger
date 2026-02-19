@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BBSaM-Messenger App Icon
+  Basiert auf dem BBSaM-Logo: Blaue Fächerform (Windrad-Motiv) mit Sprechblase
+  Primärfarbe: #1A73E8 | Sekundär: #34A853
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Hintergrund-Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A73E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1557B0;stop-opacity:1" />
+    </linearGradient>
+    <!-- Fächer-Gradient (heller nach dunkler) -->
+    <linearGradient id="fanGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E8EAED;stop-opacity:0.9" />
+    </linearGradient>
+    <!-- Schatten -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Abgerundeter Hintergrund -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" ry="224" fill="url(#bgGrad)"/>
+
+  <!-- Sprechblase (subtil, als Hintergrundform) -->
+  <g transform="translate(512, 480)" opacity="0.12">
+    <path d="M-260,-220 C-260,-320 -180,-380 -40,-380 L40,-380 C180,-380 260,-320 260,-220 L260,-20 C260,80 180,140 40,140 L-60,140 L-140,220 L-120,140 L-40,140 C-180,140 -260,80 -260,-20 Z" fill="#FFFFFF"/>
+  </g>
+
+  <!-- BBSaM Fächer-Motiv (Windrad) -->
+  <g transform="translate(400, 540)">
+    <!-- Fächerblatt 1 (nach oben links) -->
+    <path d="M0,0 L-60,-280 C-40,-300 -10,-310 20,-280 L40,-120 Z"
+          fill="#FFFFFF" opacity="0.95"/>
+    <!-- Fächerblatt 2 (nach oben) -->
+    <path d="M0,0 L60,-300 C85,-305 110,-290 115,-260 L80,-100 Z"
+          fill="#FFFFFF" opacity="0.88"/>
+    <!-- Fächerblatt 3 (nach oben rechts) -->
+    <path d="M0,0 L160,-240 C185,-230 200,-205 195,-175 L120,-60 Z"
+          fill="#FFFFFF" opacity="0.80"/>
+    <!-- Fächerblatt 4 (nach rechts) -->
+    <path d="M0,0 L230,-140 C250,-120 255,-90 240,-65 L140,-10 Z"
+          fill="#FFFFFF" opacity="0.72"/>
+    <!-- Fächerblatt 5 (nach rechts unten) -->
+    <path d="M0,0 L270,-20 C280,5 275,35 255,55 L150,40 Z"
+          fill="#FFFFFF" opacity="0.64"/>
+
+    <!-- Zentraler Punkt -->
+    <circle cx="0" cy="0" r="28" fill="#FFFFFF"/>
+    <circle cx="0" cy="0" r="18" fill="url(#bgGrad)"/>
+  </g>
+
+  <!-- Farbige Kacheln am unteren Rand (BBSaM-Identität) -->
+  <g transform="translate(262, 790)">
+    <!-- Kachel 1: Dunkelblau/Navy -->
+    <rect x="0" y="0" width="80" height="80" rx="12" fill="#1B2A4A" opacity="0.9"/>
+    <line x1="65" y1="15" x2="15" y2="65" stroke="#FFFFFF" stroke-width="3" opacity="0.5"/>
+    <!-- Kachel 2: Grün -->
+    <rect x="100" y="0" width="80" height="80" rx="12" fill="#1E8E3E" opacity="0.9"/>
+    <line x1="65" y1="15" x2="15" y2="65" stroke="#FFFFFF" stroke-width="3" opacity="0.5" transform="translate(100,0)"/>
+    <!-- Kachel 3: Lila -->
+    <rect x="200" y="0" width="80" height="80" rx="12" fill="#7B1FA2" opacity="0.9"/>
+    <line x1="65" y1="15" x2="15" y2="65" stroke="#FFFFFF" stroke-width="3" opacity="0.5" transform="translate(200,0)"/>
+    <!-- Kachel 4: Gelb-Grün -->
+    <rect x="300" y="0" width="80" height="80" rx="12" fill="#A8C023" opacity="0.9"/>
+    <line x1="65" y1="15" x2="15" y2="65" stroke="#FFFFFF" stroke-width="3" opacity="0.5" transform="translate(300,0)"/>
+    <!-- Kachel 5: Rot-Orange -->
+    <rect x="400" y="0" width="80" height="80" rx="12" fill="#E65100" opacity="0.9"/>
+    <line x1="65" y1="15" x2="15" y2="65" stroke="#FFFFFF" stroke-width="3" opacity="0.5" transform="translate(400,0)"/>
+  </g>
+</svg>

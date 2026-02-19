@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BBSaM-Messenger Wordmark (Nur Schriftzug)
+  Verwendung: Header, Navigation, schmale Bereiche
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" width="400" height="60">
+  <text x="0" y="38" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="36" font-weight="700" fill="#202124">
+    BBSaM<tspan font-weight="300" fill="#5F6368">-Messenger</tspan>
+  </text>
+  <!-- Akzentlinie in Primärfarbe -->
+  <rect x="0" y="50" width="120" height="3" rx="1.5" fill="#1A73E8"/>
+</svg>
